@@ -1,46 +1,70 @@
 ```
-# Compiled and build artifacts
+# Build artifacts
 *.o
 *.obj
-*.out
 *.a
 *.so
 *.dll
 *.exe
+*.out
+
+# C++ specific
+*.ilk
+*.pdb
+*.sdf
+*.opensdf
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.cmake
 build/
 dist/
-target/
 
 # Dependencies
-node_modules/
-venv/
-.venv/
-__pycache__/
-.mypy_cache/
-.pytest_cache/
-.gradle/
+vendor/
 
-# Editors
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+.env.*
+
+# Editor/IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 *.tmp
 
-# Logs
-*.log
+# OS
+.DS_Store
+Thumbs.db
 
 # Coverage
 coverage/
 htmlcov/
 .coverage
 
-# Environment
-.env
-.env.local
-*.env.*
+# Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
 
-# System files
-.DS_Store
-Thumbs.db
+# Testing
+*.test
+*.tests
+
+# Distribution
+*.tar.gz
+*.zip
+*.tar
+*.gz
 ```

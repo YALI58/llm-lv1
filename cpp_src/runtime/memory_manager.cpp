@@ -78,16 +78,18 @@ std::vector<float>* MemoryManager::allocate(size_t size) {
             });
         
         if (it != free_blocks_.end()) {
+            // Store iterator before erase to avoid use-after-erase
+            MemoryBlock* block_ptr = &(*it);
             it->is_free = false;
             it->data.resize(size, 0.0f);
-            allocated_blocks_[it->data.data()] = &(*it);
+            allocated_blocks_[it->data.data()] = block_ptr;
             
             stats_.allocated_memory += it->size;
             stats_.free_blocks--;
             stats_.peak_memory = std::max(stats_.peak_memory, stats_.allocated_memory);
             
             free_blocks_.erase(it);
-            return &it->data;
+            return &block_ptr->data;
         }
     }
     
@@ -185,11 +187,11 @@ MemoryStats MemoryManager::get_stats() const {
 void MemoryManager::reset() {
     std::lock_guard<std::mutex> lock(mutex_);
     
-    // Free all allocated blocks
+    // Free all externally allocated blocks
     for (auto& pair : allocated_blocks_) {
         if (pair.second == nullptr) {
-            // Externally allocated
-            delete[] reinterpret_cast<char*>(pair.first);
+            // Externally allocated vector<float>* - properly delete it
+            delete static_cast<std::vector<float>*>(pair.first);
         }
     }
     
