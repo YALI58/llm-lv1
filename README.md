@@ -81,6 +81,7 @@ make -j$(nproc)
 # 6. 运行示例
 ./simple_inference
 ./streaming_example
+./demo_showcase  # 🌟 强烈推荐！完整的交互式演示
 ```
 
 ### 编译选项
@@ -157,6 +158,9 @@ cmake .. \
 │   ├── model/
 │   └── utils/
 ├── cpp_examples/         # 示例代码
+│   ├── demo_showcase.cpp  # 🌟 完整功能演示（推荐初学者）
+│   ├── simple_inference.cpp
+│   └── streaming_example.cpp
 ├── cpp_tests/            # 测试代码
 ├── CMakeLists.txt        # 构建配置
 └── README.md             # 本文档

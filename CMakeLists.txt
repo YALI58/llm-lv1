@@ -144,6 +144,9 @@ if(BUILD_EXAMPLES)
     
     add_executable(streaming_example cpp_examples/streaming_example.cpp)
     target_link_libraries(streaming_example llm_lv1_lib)
+    
+    add_executable(demo_showcase cpp_examples/demo_showcase.cpp)
+    target_link_libraries(demo_showcase llm_lv1_lib)
 endif()
 
 # Installation
