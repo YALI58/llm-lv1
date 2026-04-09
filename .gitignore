@@ -1,70 +1,97 @@
 ```
 # Build artifacts
+build/
+cmake-build*/
+
+# CMake files
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+*.cmake
+
+# Executables
+*.exe
+*.out
+*.bin
+
+# Object files
 *.o
 *.obj
 *.a
+*.lib
 *.so
+*.dylib
 *.dll
-*.exe
-*.out
 
-# C++ specific
-*.ilk
-*.pdb
-*.sdf
-*.opensdf
-
-# CMake
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-Makefile
-*.cmake
-build/
-dist/
+# Logs
+logs/
+*.log
 
 # Dependencies
 vendor/
+_third_party/
 
-# Logs
-*.log
+# Temporary files
+*.tmp
+*.temp
+*~
 
 # Environment
 .env
 .env.local
 .env.*
 
-# Editor/IDE
+# IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
-*.tmp
 
-# OS
-.DS_Store
-Thumbs.db
-
-# Coverage
+# Coverage reports
 coverage/
 htmlcov/
-.coverage
 
-# Cache
+# Test reports
+test-reports/
+
+# Package managers
+node_modules/
+.npm/
+.yarn/
+bower_components/
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.Python
+.pytest_cache/
+.mypy_cache/
+.eggs/
+*.egg-info/
+
+# Java
+target/
+.gradle/
+*.class
+
+# C++
+*.out
+*.exe
+*.dll
 *.so
+*.dylib
+*.a
+*.lib
 
-# Testing
-*.test
-*.tests
-
-# Distribution
-*.tar.gz
+# Archives
 *.zip
-*.tar
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.7z
+*.rar
 *.gz
+*.bz2
+*.xz
 ```

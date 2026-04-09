@@ -147,13 +147,11 @@ std::shared_ptr<GenerationState> InferenceEngine::create_generation_state(
     auto state = std::make_shared<GenerationState>(request_id);
     state->prompt_tokens = prompt_tokens;
     
-    // Store EOS token info safely using int instead of pointer casting
+    // Store EOS token info safely using int map instead of pointer casting
     if (stopping_criteria.eos_token_id >= 0) {
-        state->logits_processor_state["eos_token_id"] = 
-            reinterpret_cast<void*>(static_cast<intptr_t>(stopping_criteria.eos_token_id));
+        state->logits_processor_state_int["eos_token_id"] = stopping_criteria.eos_token_id;
     }
-    state->logits_processor_state["max_tokens"] = 
-        reinterpret_cast<void*>(static_cast<intptr_t>(stopping_criteria.max_new_tokens));
+    state->logits_processor_state_int["max_tokens"] = stopping_criteria.max_new_tokens;
     
     active_states_[request_id] = state;
     return state;

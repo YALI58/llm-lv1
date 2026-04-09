@@ -146,17 +146,20 @@ std::vector<float> paged_attention_forward(
                     int page_idx = kv_pos / page_size;
                     int offset_in_page = kv_pos % page_size;
                     
-                    // Safe bounds checking
-                    size_t pages_per_seq = static_cast<size_t>(seq_len) / static_cast<size_t>(page_size) + 1;
-                    size_t total_pages = static_cast<size_t>(batch_size) * pages_per_seq;
-                    
-                    if (static_cast<size_t>(page_idx) >= pages_per_seq || 
-                        static_cast<size_t>(b) * pages_per_seq + page_idx >= total_pages ||
-                        page_idx >= static_cast<int>(page_table.size()) / std::max(1, static_cast<int>(pages_per_seq))) {
+                    // Safe bounds checking with explicit validation
+                    if (page_idx < 0 || page_size <= 0) {
                         continue;
                     }
                     
-                    int physical_page = page_table[b * static_cast<int>(pages_per_seq) + page_idx];
+                    size_t pages_per_seq = static_cast<size_t>(seq_len) / static_cast<size_t>(page_size) + 1;
+                    
+                    // Validate page table index
+                    size_t page_table_index = static_cast<size_t>(b) * pages_per_seq + static_cast<size_t>(page_idx);
+                    if (page_table_index >= page_table.size()) {
+                        continue;
+                    }
+                    
+                    int physical_page = page_table[page_table_index];
                     if (physical_page < 0 || physical_page >= num_pages) {
                         continue;
                     }
@@ -241,13 +244,28 @@ void MultiHeadAttention::update_kv_cache(
 ) {
     // Update KV cache with new key/value
     // This is a simplified implementation
-    size_t cache_size = batch_size * num_heads_ * seq_len * head_dim_;
+    size_t cache_size = static_cast<size_t>(batch_size) * static_cast<size_t>(num_heads_) * 
+                        static_cast<size_t>(seq_len) * static_cast<size_t>(head_dim_);
     
     if (kv_cache_.size() < cache_size * 2) {
         kv_cache_.resize(cache_size * 2, 0.0f);
     }
     
-    // Copy new keys and values to cache
+    // Validate sizes before memcpy to prevent buffer overflow
+    size_t key_bytes = key.size() * sizeof(float);
+    size_t value_bytes = value.size() * sizeof(float);
+    size_t available_key_space = kv_cache_.size() * sizeof(float) / 2;
+    size_t available_value_space = kv_cache_.size() * sizeof(float) / 2;
+    
+    if (key_bytes > available_key_space || value_bytes > available_value_space) {
+        // Resize if needed
+        size_t required_size = std::max(key.size(), value.size()) * 2;
+        if (required_size > kv_cache_.size()) {
+            kv_cache_.resize(required_size * 2, 0.0f);
+        }
+    }
+    
+    // Copy new keys and values to cache with validated sizes
     std::memcpy(kv_cache_.data(), key.data(), key.size() * sizeof(float));
     std::memcpy(kv_cache_.data() + cache_size, value.data(), value.size() * sizeof(float));
     

@@ -138,6 +138,8 @@ private:
     
     std::vector<MemoryBlock> free_blocks_;
     std::unordered_map<void*, MemoryBlock*> allocated_blocks_;
+    // Use indices instead of pointers to avoid pointer invalidation issues
+    std::unordered_map<void*, size_t> allocated_block_indices_;
     
     mutable std::mutex mutex_;
     MemoryStats stats_;
