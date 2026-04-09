@@ -1,97 +1,64 @@
 ```
-# Build artifacts
-build/
-cmake-build*/
-
-# CMake files
-CMakeCache.txt
-CMakeFiles/
-CMakeScripts/
-*.cmake
-
-# Executables
-*.exe
-*.out
-*.bin
-
-# Object files
-*.o
-*.obj
-*.a
-*.lib
-*.so
-*.dylib
-*.dll
-
-# Logs
-logs/
-*.log
+# Documentation build artifacts (if any)
+docs/_build/
+docs/build/
+docs/.vuepress/dist/
 
 # Dependencies
-vendor/
-_third_party/
+node_modules/
+.julia/
+zig-cache/
+target/
 
-# Temporary files
+# Compiled files
+*.pyc
+__pycache__/
+*.class
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.out
+
+# Logs and temp files
+*.log
 *.tmp
-*.temp
-*~
-
-# Environment
-.env
-.env.local
-.env.*
-
-# IDE files
-.vscode/
-.idea/
 *.swp
 *.swo
 
-# Coverage reports
+# Environment files
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# Coverage
 coverage/
 htmlcov/
+.coverage
 
-# Test reports
-test-reports/
-
-# Package managers
-node_modules/
-.npm/
-.yarn/
-bower_components/
-
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.pytest_cache/
-.mypy_cache/
-.eggs/
+# Distribution / packaging
+dist/
+build/
+*.tar.gz
+*.whl
+*.egg
 *.egg-info/
 
-# Java
-target/
-.gradle/
-*.class
+# Testing
+.pytest_cache/
+.mypy_cache/
+.nyc_output/
+coverage.xml
+*.gcda
+*.gcno
 
-# C++
-*.out
-*.exe
-*.dll
-*.so
-*.dylib
-*.a
-*.lib
-
-# Archives
-*.zip
-*.tar.gz
-*.tar.bz2
-*.tar.xz
-*.7z
-*.rar
-*.gz
-*.bz2
-*.xz
+# OS generated files
+.DS_Store
+Thumbs.db
 ```
