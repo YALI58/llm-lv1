@@ -152,17 +152,31 @@ cmake .. \
 │   └── runtime/          # 运行时
 │       └── memory_manager.hpp
 ├── cpp_src/              # 源文件
-│   ├── core/
-│   ├── kernel/
-│   ├── runtime/
-│   ├── model/
-│   └── utils/
+│   ├── core/             # 核心实现 (engine.cpp, config.cpp, state.cpp)
+│   ├── kernel/           # 内核实现 (attention.cpp, activation.cpp, normalization.cpp)
+│   ├── runtime/          # 运行时实现 (memory_manager.cpp, scheduler.cpp, context.cpp)
+│   ├── model/            # 模型加载和解析
+│   └── utils/            # 工具函数
 ├── cpp_examples/         # 示例代码
 │   ├── demo_showcase.cpp  # 🌟 完整功能演示（推荐初学者）
 │   ├── simple_inference.cpp
 │   └── streaming_example.cpp
 ├── cpp_tests/            # 测试代码
+│   ├── test_all.cpp      # 综合测试
+│   ├── test_engine.cpp   # 引擎测试
+│   ├── test_memory_manager.cpp  # 内存管理器测试
+│   ├── test_attention.cpp  # 注意力机制测试
+│   └── test_scheduler.cpp  # 调度器测试
+├── docs/                 # 文档
+│   └── tutorial/         # 教程系列
+│       ├── INDEX.md      # 教程索引
+│       ├── LEARNING_PATH.md  # 学习路径
+│       └── [01-06]/      # 分模块教程
+├── scripts/              # 脚本工具
+│   ├── check_vulnerabilities.sh
+│   └── find_new_vulnerabilities.sh
 ├── CMakeLists.txt        # 构建配置
+├── LEARNING_GUIDE.md     # 学习指南
 └── README.md             # 本文档
 ```
 
@@ -653,5 +667,5 @@ public:
 
 ---
 
-**最后更新**: 2024 年
+**最后更新**: 2026 年 04 月 09 日
 **维护者**: LLM-LV1 C++ Team
