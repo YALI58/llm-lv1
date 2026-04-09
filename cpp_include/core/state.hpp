@@ -71,7 +71,8 @@ public:
     bool is_finished = false;               // Whether generation is complete
     std::string finish_reason;              // Reason for finishing
     
-    // Sampling state
+    // Sampling state - use int values instead of pointer casting for safety
+    std::unordered_map<std::string, int> logits_processor_state_int;
     std::unordered_map<std::string, void*> logits_processor_state;
     
     /**

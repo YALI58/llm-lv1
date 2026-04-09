@@ -78,18 +78,30 @@ std::vector<float>* MemoryManager::allocate(size_t size) {
             });
         
         if (it != free_blocks_.end()) {
-            // Store iterator before erase to avoid use-after-erase
-            MemoryBlock* block_ptr = &(*it);
+            // Get the index before any modifications to avoid iterator invalidation
+            size_t block_index = std::distance(free_blocks_.begin(), it);
+            size_t block_size = it->size;
+            
+            // Mark as allocated and resize data
             it->is_free = false;
             it->data.resize(size, 0.0f);
-            allocated_blocks_[it->data.data()] = block_ptr;
             
-            stats_.allocated_memory += it->size;
+            // Store pointer to the data for the return value
+            float* data_ptr = it->data.data();
+            
+            // Store in allocated map using index instead of pointer to block
+            allocated_blocks_[data_ptr] = &free_blocks_[block_index];
+            allocated_block_indices_[data_ptr] = block_index;
+            
+            stats_.allocated_memory += block_size;
             stats_.free_blocks--;
             stats_.peak_memory = std::max(stats_.peak_memory, stats_.allocated_memory);
             
-            free_blocks_.erase(it);
-            return &block_ptr->data;
+            // Move block from free_blocks_ to a separate allocated_blocks_vector_
+            // to avoid pointer invalidation - but we keep it in free_blocks_ for now
+            // and just mark it as not free
+            
+            return &free_blocks_[block_index].data;
         }
     }
     
@@ -113,12 +125,29 @@ bool MemoryManager::free(std::vector<float>* data) {
     if (it != allocated_blocks_.end()) {
         MemoryBlock* block = it->second;
         if (block != nullptr) {
-            // Return block to free pool
-            block->is_free = true;
-            block->data.clear();
-            free_blocks_.push_back(*block);
-            stats_.free_blocks++;
-            stats_.allocated_memory -= block->size;
+            // Return block to free pool using index lookup
+            auto idx_it = allocated_block_indices_.find(data->data());
+            if (idx_it != allocated_block_indices_.end()) {
+                size_t block_index = idx_it->second;
+                if (block_index < free_blocks_.size()) {
+                    free_blocks_[block_index].is_free = true;
+                    free_blocks_[block_index].data.clear();
+                    stats_.free_blocks++;
+                    stats_.allocated_memory -= free_blocks_[block_index].size;
+                }
+                allocated_block_indices_.erase(idx_it);
+            } else {
+                // Fallback: search for the block
+                for (size_t i = 0; i < free_blocks_.size(); ++i) {
+                    if (&free_blocks_[i] == block) {
+                        free_blocks_[i].is_free = true;
+                        free_blocks_[i].data.clear();
+                        stats_.free_blocks++;
+                        stats_.allocated_memory -= free_blocks_[i].size;
+                        break;
+                    }
+                }
+            }
         } else {
             // Externally allocated block
             stats_.allocated_memory -= data->size() * sizeof(float);
@@ -196,6 +225,7 @@ void MemoryManager::reset() {
     }
     
     allocated_blocks_.clear();
+    allocated_block_indices_.clear();
     
     // Reset free blocks
     for (auto& block : free_blocks_) {
