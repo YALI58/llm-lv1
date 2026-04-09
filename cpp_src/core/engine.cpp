@@ -147,11 +147,13 @@ std::shared_ptr<GenerationState> InferenceEngine::create_generation_state(
     auto state = std::make_shared<GenerationState>(request_id);
     state->prompt_tokens = prompt_tokens;
     
-    // Store EOS token info
+    // Store EOS token info safely using int instead of pointer casting
     if (stopping_criteria.eos_token_id >= 0) {
         state->logits_processor_state["eos_token_id"] = 
             reinterpret_cast<void*>(static_cast<intptr_t>(stopping_criteria.eos_token_id));
     }
+    state->logits_processor_state["max_tokens"] = 
+        reinterpret_cast<void*>(static_cast<intptr_t>(stopping_criteria.max_new_tokens));
     
     active_states_[request_id] = state;
     return state;
@@ -246,6 +248,9 @@ std::string InferenceEngine::generate(
         
         // Get generated text
         std::string generated_text = state->get_generated_text(tokenizer_.get(), true);
+        
+        // Clean up state before returning
+        remove_generation_state(state->request_id);
         return generated_text;
         
     } catch (...) {
@@ -253,9 +258,6 @@ std::string InferenceEngine::generate(
         remove_generation_state(state->request_id);
         throw;
     }
-    
-    // Clean up state
-    remove_generation_state(state->request_id);
 }
 
 void InferenceEngine::generate_stream(
@@ -275,14 +277,14 @@ void InferenceEngine::generate_stream(
         // Run streaming generation
         run_generation_stream(state, stopping_criteria, callback);
         
+        // Clean up state after successful completion
+        remove_generation_state(state->request_id);
+        
     } catch (...) {
         // Clean up state
         remove_generation_state(state->request_id);
         throw;
     }
-    
-    // Clean up state
-    remove_generation_state(state->request_id);
 }
 
 std::unordered_map<std::string, std::string> InferenceEngine::get_stats() const {

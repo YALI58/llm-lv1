@@ -49,9 +49,10 @@ std::vector<float> attention_forward(
     // Output tensor
     std::vector<float> output(query.size(), 0.0f);
     
-    // Temporary buffers for attention computation
-    std::vector<float> scores(seq_len * seq_len);
-    std::vector<float> weights(seq_len * seq_len);
+    // Temporary buffers for attention computation - use safe size calculation
+    size_t scores_size = static_cast<size_t>(seq_len) * static_cast<size_t>(seq_len);
+    std::vector<float> scores(scores_size);
+    std::vector<float> weights(scores_size);
     
     // For each batch and head
     for (int b = 0; b < batch_size; ++b) {
@@ -145,11 +146,17 @@ std::vector<float> paged_attention_forward(
                     int page_idx = kv_pos / page_size;
                     int offset_in_page = kv_pos % page_size;
                     
-                    if (page_idx >= static_cast<int>(page_table.size()) / (batch_size * (seq_len / page_size + 1))) {
+                    // Safe bounds checking
+                    size_t pages_per_seq = static_cast<size_t>(seq_len) / static_cast<size_t>(page_size) + 1;
+                    size_t total_pages = static_cast<size_t>(batch_size) * pages_per_seq;
+                    
+                    if (static_cast<size_t>(page_idx) >= pages_per_seq || 
+                        static_cast<size_t>(b) * pages_per_seq + page_idx >= total_pages ||
+                        page_idx >= static_cast<int>(page_table.size()) / std::max(1, static_cast<int>(pages_per_seq))) {
                         continue;
                     }
                     
-                    int physical_page = page_table[b * (seq_len / page_size + 1) + page_idx];
+                    int physical_page = page_table[b * static_cast<int>(pages_per_seq) + page_idx];
                     if (physical_page < 0 || physical_page >= num_pages) {
                         continue;
                     }
