@@ -73,7 +73,34 @@ cmake .. -DCPP_STANDARD=14  # C++14
 cmake .. -DCPP_STANDARD=11  # C++11
 
 # 4. 编译
-make -j$(nproc)
+
+## Linux/macOS
+
+```bash
+cmake --build . -j$(nproc)
+```
+
+## Windows (PowerShell)
+
+```powershell
+cmake --build . -j$env:NUMBER_OF_PROCESSORS
+```
+
+## Windows (CMD)
+
+```cmd
+cmake --build . -j%NUMBER_OF_PROCESSORS%
+```
+
+或者使用 CMake 的预设构建配置：
+
+```bash
+# 配置时指定生成器（Windows）
+cmake .. -G "Visual Studio 17 2022" -A x64
+
+# 构建
+cmake --build . --config Release
+```
 
 # 5. 运行测试
 ./run_tests
@@ -528,7 +555,15 @@ g++ --version
 # 安装 CUDA Toolkit
 # 然后编译时启用
 cmake .. -DUSE_CUDA=ON
-make -j$(nproc)
+
+# Linux/macOS
+cmake --build . -j$(nproc)
+
+# Windows (PowerShell)
+cmake --build . -j$env:NUMBER_OF_PROCESSORS
+
+# Windows (CMD)
+cmake --build . -j%NUMBER_OF_PROCESSORS%
 ```
 
 ### Q4: 推理速度慢如何优化？
